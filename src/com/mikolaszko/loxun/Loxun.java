@@ -12,6 +12,9 @@ public class Loxun {
   static boolean hadError = false;
 
   public static void main(String[] args) throws IOException {
+    for (String i : args) {
+      System.out.println(i);
+    }
     if (args.length > 1) {
       System.out.println("Usage: jlox [script]");
       System.exit(64);
