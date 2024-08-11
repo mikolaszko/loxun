@@ -1,4 +1,3 @@
 #! /usr/bin/env bash
 
 java -cp bin/loxun src/com/mikolaszko/loxun/Loxun.java $@
-
