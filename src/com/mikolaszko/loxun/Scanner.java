@@ -35,11 +35,11 @@ public class Scanner {
     keywords.put("while", WHILE);
   }
 
-  Scanner(String source) {
+  public Scanner(String source) {
     this.source = source;
   }
 
-  List<Token> scanTokens() {
+  public List<Token> scanTokens() {
     while (!isAtEnd()) {
       // we are at the beginning of the next lexeme;
       start = current;
@@ -127,10 +127,7 @@ public class Scanner {
   }
 
   private void identifier() {
-    while (isAlphaNumeric(peek()))
-      advance();
-
-    addToken(IDENTIFIER);
+    while (isAlphaNumeric(peek())) advance();
 
     String text = source.substring(start, current);
     TokenType type = keywords.get(text);
@@ -145,7 +142,7 @@ public class Scanner {
   }
 
   private boolean isAlphaNumeric(char c) {
-    return isAlpha(c) && isDigit(c);
+    return isAlpha(c) || isDigit(c);
   }
 
   private void string() {
