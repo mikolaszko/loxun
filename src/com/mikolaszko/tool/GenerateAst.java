@@ -42,7 +42,7 @@ public class GenerateAst {
         writer.println(" public static class " + className + " extends " + baseName + " {"); 
 
         // beginning of a constructor
-        writer.println("    " + className + "(" + fieldList + ") {" );
+        writer.println("    public " + className + "(" + fieldList + ") {" );
         String[] fields = fieldList.split(", ");
         for (String field : fields ) {
             String name = field.split(" ")[1];

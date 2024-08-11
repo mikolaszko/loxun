@@ -4,7 +4,7 @@ import java.util.List;
 
 abstract public class Expr {
  public static class Binary extends Expr {
-    Binary(Expr left, Token operator, Expr right) {
+    public Binary(Expr left, Token operator, Expr right) {
         this.left = left;
         this.operator = operator;
         this.right = right;
@@ -15,21 +15,21 @@ abstract public class Expr {
     final Expr right;
  }
  public static class Grouping extends Expr {
-    Grouping(Expr expression) {
+    public Grouping(Expr expression) {
         this.expression = expression;
      }
 
     final Expr expression;
  }
  public static class Literal extends Expr {
-    Literal(Object value) {
+    public Literal(Object value) {
         this.value = value;
      }
 
     final Object value;
  }
  public static class Unary extends Expr {
-    Unary(Token operator, Expr right) {
+    public Unary(Token operator, Expr right) {
         this.operator = operator;
         this.right = right;
      }
