@@ -1,66 +1,73 @@
 package loxun;
 
 abstract public class Expr {
-    interface Visitor<R> {
+  interface Visitor<R> {
     R visitBinaryExpr(Binary expr);
+
     R visitGroupingExpr(Grouping expr);
+
     R visitLiteralExpr(Literal expr);
+
     R visitUnaryExpr(Unary expr);
- }
- public static class Binary extends Expr {
+  }
+
+  public static class Binary extends Expr {
     public Binary(Expr left, Token operator, Expr right) {
-        this.left = left;
-        this.operator = operator;
-        this.right = right;
-     }
+      this.left = left;
+      this.operator = operator;
+      this.right = right;
+    }
 
     @Override
     <R> R accept(Visitor<R> visitor) {
-        return visitor.visitBinaryExpr(this);
+      return visitor.visitBinaryExpr(this);
     }
 
     final Expr left;
     final Token operator;
     final Expr right;
- }
- public static class Grouping extends Expr {
+  }
+
+  public static class Grouping extends Expr {
     public Grouping(Expr expression) {
-        this.expression = expression;
-     }
+      this.expression = expression;
+    }
 
     @Override
     <R> R accept(Visitor<R> visitor) {
-        return visitor.visitGroupingExpr(this);
+      return visitor.visitGroupingExpr(this);
     }
 
     final Expr expression;
- }
- public static class Literal extends Expr {
+  }
+
+  public static class Literal extends Expr {
     public Literal(Object value) {
-        this.value = value;
-     }
+      this.value = value;
+    }
 
     @Override
     <R> R accept(Visitor<R> visitor) {
-        return visitor.visitLiteralExpr(this);
+      return visitor.visitLiteralExpr(this);
     }
 
     final Object value;
- }
- public static class Unary extends Expr {
+  }
+
+  public static class Unary extends Expr {
     public Unary(Token operator, Expr right) {
-        this.operator = operator;
-        this.right = right;
-     }
+      this.operator = operator;
+      this.right = right;
+    }
 
     @Override
     <R> R accept(Visitor<R> visitor) {
-        return visitor.visitUnaryExpr(this);
+      return visitor.visitUnaryExpr(this);
     }
 
     final Token operator;
     final Expr right;
- }
+  }
 
- abstract <R> R accept(Visitor<R> visitor);
+  abstract <R> R accept(Visitor<R> visitor);
 }
