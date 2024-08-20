@@ -120,7 +120,8 @@ public class Scanner {
         } else if (isAlpha(c)) {
           identifier();
         } else {
-          Loxun.error(line, "Unexpected charter.");
+          Token errorToken = new Token(ERROR,  String.valueOf(c), null, line);
+          Loxun.error(errorToken, "Unexpected charter.");
         }
         break;
     }
@@ -153,7 +154,8 @@ public class Scanner {
     }
 
     if (isAtEnd()) {
-      Loxun.error(line, "Unterminated string.");
+      Token errorToken = new Token(ERROR,  "", null, line);
+      Loxun.error(errorToken, "Unterminated string.");
       return;
     }
 
