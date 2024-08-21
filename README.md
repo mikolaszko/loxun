@@ -1,6 +1,6 @@
 # Loxun
 
-Loxun is a dynamically typed, multi-paradigm(ed?), tree-walk interpreter with handwritten GC.
+Loxun is a dynamically typed, multi-paradigm(ed?), tree-walk interpreter.
 
 ## Installation
 

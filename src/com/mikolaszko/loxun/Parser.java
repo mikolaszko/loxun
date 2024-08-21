@@ -156,6 +156,7 @@ public class Parser {
     }
 
     private Token peek() {
+        System.out.println(tokens.get(current));
         return tokens.get(current);
     }
 

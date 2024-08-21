@@ -9,7 +9,9 @@ import java.nio.file.Paths;
 import java.util.List;
 
 public class Loxun {
+  private static final Interpreter interpreter = new Interpreter();
   static boolean hadError = false;
+  static boolean hadRuntimeError = false;
 
   public static void main(String[] args) throws IOException {
     for (String i : args) {
@@ -31,6 +33,9 @@ public class Loxun {
 
     if (hadError)
       System.exit(65);
+
+    if (hadRuntimeError) 
+      System.exit(70);
   }
 
   private static void runPrompt() throws IOException {
@@ -55,8 +60,7 @@ public class Loxun {
 
     if (hadError) return;
 
-    System.out.println(new AstPrinter().print(expression));
-
+    interpreter.interpret(expression);
   }
 
   public static void error(Token token, String message) {
@@ -65,6 +69,11 @@ public class Loxun {
     } else {
       report(token.line, "at '" + token.lexeme + "'", message);
     }
+  }
+
+  public static void runtimeError(RuntimeError error) {
+    System.err.println(error.getMessage() + "\n[line" +error.token.line+"]");
+    hadRuntimeError = true;
   }
 
   private static void report(int line, String where, String message) {
