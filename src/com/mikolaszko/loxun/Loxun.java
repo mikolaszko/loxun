@@ -34,7 +34,7 @@ public class Loxun {
     if (hadError)
       System.exit(65);
 
-    if (hadRuntimeError) 
+    if (hadRuntimeError)
       System.exit(70);
   }
 
@@ -56,11 +56,12 @@ public class Loxun {
     Scanner scanner = new Scanner(source);
     List<Token> tokens = scanner.scanTokens();
     Parser parser = new Parser(tokens);
-    Expr expression = parser.parse();
+    List<Stmt> statements = parser.parse();
 
-    if (hadError) return;
+    if (hadError)
+      return;
 
-    interpreter.interpret(expression);
+    interpreter.interpret(statements);
   }
 
   public static void error(Token token, String message) {
@@ -72,7 +73,7 @@ public class Loxun {
   }
 
   public static void runtimeError(RuntimeError error) {
-    System.err.println(error.getMessage() + "\n[line" +error.token.line+"]");
+    System.err.println(error.getMessage() + "\n[line" + error.token.line + "]");
     hadRuntimeError = true;
   }
 
