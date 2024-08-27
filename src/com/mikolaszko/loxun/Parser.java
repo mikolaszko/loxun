@@ -25,7 +25,7 @@ public class Parser {
 
   private Stmt declaration() {
     try {
-      if (match(VAR))
+      if (match(TokenType.VAR))
         return varDeclaration();
 
       return statement();
@@ -56,7 +56,7 @@ public class Parser {
     Token name = consume(TokenType.IDENTIFIER, "Expect variable name.");
 
     Expr initializer = null;
-    if (match(EQUAL)) {
+    if (match(TokenType.EQUAL)) {
       initializer = expression();
     }
 
