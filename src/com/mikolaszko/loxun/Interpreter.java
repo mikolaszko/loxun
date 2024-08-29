@@ -17,6 +17,92 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     }
   }
 
+
+  private Object evaluate(Expr expr) {
+    return expr.accept(this);
+  }
+
+  private void execute(Stmt stmt) {
+    stmt.accept(this);
+  }
+  @Override 
+  public Void visitWhileStmt(Stmt.While stmt) {
+    while (isTruthy(evaluate(stmt.condition))) {
+      execute(stmt.body);
+    }
+
+    return null;
+  }
+  @Override
+  public Object visitLogicalExpr(Expr.Logical expr) {
+    Object left = evaluate(expr.left);
+
+    if (expr.operator.type == TokenType.OR) {
+      if (isTruthy(left)) return left;
+    } else {
+      if (!isTruthy(left)) return left;
+    }
+
+    return evaluate(expr.right);
+  }
+
+  @Override
+  public Void visitIfStmt(Stmt.If stmt) {
+    if (isTruthy(evaluate(stmt.condition))) {
+      execute(stmt.thenBranch);
+    } else if (stmt.elseBranch != null) {
+      execute(stmt.elseBranch);
+    }
+
+    return null;
+  }
+
+  @Override
+  public Void visitBlockStmt(Stmt.Block stmt) {
+    executeBlock(stmt.statements, new Environment(environment));
+    return null;
+  }
+
+  void executeBlock(List<Stmt> statements, Environment environment) {
+    Environment previous = this.environment;
+    try {
+      this.environment = environment;
+      for (Stmt statement : statements) {
+        execute(statement);
+      }
+    } finally {
+      this.environment = previous;
+    }
+
+  }
+
+  @Override
+  public Void visitExpressionStmt(Stmt.Expression stmt) {
+    evaluate(stmt.expression);
+    return null;
+  }
+
+  @Override
+  public Void visitPrintStmt(Stmt.Print stmt) {
+    Object value = evaluate(stmt.expression);
+    System.out.println(stringify(value));
+    return null;
+  }
+
+  private String stringify(Object object) {
+    if (object == null)
+      return "nil";
+    if (object instanceof Double) {
+      String text = object.toString();
+
+      if (text.endsWith(".0")) {
+        text = text.substring(0, text.length() - 2);
+      }
+      return text;
+    }
+    return object.toString();
+  }
+
   @Override
   public Void visitVarStmt(Stmt.Var stmt) {
     Object value = null;
@@ -143,40 +229,5 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
       return;
 
     throw new RuntimeError(operator, "Operands must be numbers.");
-  }
-
-  private Object evaluate(Expr expr) {
-    return expr.accept(this);
-  }
-
-  private void execute(Stmt stmt) {
-    stmt.accept(this);
-  }
-
-  @Override
-  public Void visitExpressionStmt(Stmt.Expression stmt) {
-    evaluate(stmt.expression);
-    return null;
-  }
-
-  @Override
-  public Void visitPrintStmt(Stmt.Print stmt) {
-    Object value = evaluate(stmt.expression);
-    System.out.println(stringify(value));
-    return null;
-  }
-
-  private String stringify(Object object) {
-    if (object == null)
-      return "nil";
-    if (object instanceof Double) {
-      String text = object.toString();
-
-      if (text.endsWith(".0")) {
-        text = text.substring(0, text.length() - 2);
-      }
-      return text;
-    }
-    return object.toString();
   }
 }
