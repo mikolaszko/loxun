@@ -50,11 +50,11 @@ public class Parser {
       Expr value = assignment();
 
       if (expr instanceof Expr.Variable) {
-        Token name = ((Expr.Variable)expr).name;
+        Token name = ((Expr.Variable) expr).name;
         return new Expr.Assign(name, value);
       }
 
-      error (equals, "Invalid assignment target.");
+      error(equals, "Invalid assignment target.");
     }
     return expr;
   }
@@ -84,14 +84,18 @@ public class Parser {
   }
 
   private Stmt statement() {
-    if (match(TokenType.FOR)) return forStatement();
-    if (match(TokenType.IF)) return ifStatement();
+    if (match(TokenType.FOR))
+      return forStatement();
+    if (match(TokenType.IF))
+      return ifStatement();
     if (match(TokenType.PRINT))
       return printStatement();
 
-    if (match(TokenType.WHILE)) return whileStatement();
-    
-    if (match(TokenType.LEFT_BRACE)) return new Stmt.Block(block());
+    if (match(TokenType.WHILE))
+      return whileStatement();
+
+    if (match(TokenType.LEFT_BRACE))
+      return new Stmt.Block(block());
 
     return expressionStatement();
   }
@@ -100,10 +104,10 @@ public class Parser {
     consume(TokenType.LEFT_PAREN, "Expect '(' after 'for'.");
 
     Stmt initializer;
-    if(match(TokenType.SEMICOLON)) {
+    if (match(TokenType.SEMICOLON)) {
       initializer = null;
     } else if (match(TokenType.VAR)) {
-      initializer = varDeclaration(); 
+      initializer = varDeclaration();
     } else {
       initializer = expressionStatement();
     }
@@ -112,7 +116,7 @@ public class Parser {
     if (!check(TokenType.SEMICOLON)) {
       condition = expression();
     }
-    consume (TokenType.SEMICOLON, "Expect ';' after loop condition.");
+    consume(TokenType.SEMICOLON, "Expect ';' after loop condition.");
 
     Expr increment = null;
     if (!check(TokenType.RIGHT_PAREN)) {
@@ -123,13 +127,12 @@ public class Parser {
 
     if (increment != null) {
       body = new Stmt.Block(
-        Arrays.asList(
-          body,
-          new Stmt.Expression(increment)
-        )
-      );
+          Arrays.asList(
+              body,
+              new Stmt.Expression(increment)));
     }
-    if (condition == null) condition = new Expr.Literal(true);
+    if (condition == null)
+      condition = new Expr.Literal(true);
     body = new Stmt.While(condition, body);
 
     if (initializer != null) {
@@ -248,7 +251,36 @@ public class Parser {
       Expr right = unary();
       return new Expr.Unary(operator, right);
     }
-    return primary();
+    return call();
+  }
+
+  private Expr call() {
+    Expr expr = primary();
+
+    while (true) {
+      if (match(TokenType.LEFT_PAREN)) {
+        expr = finishCall(expr);
+      } else {
+        break;
+      }
+    }
+    return expr;
+  }
+
+  private Expr finishCall(Expr callee) {
+    List<Expr> arguments = new ArrayList<>();
+    if (!check(RIGHT_PAREN)) {
+      do {
+        if (arguments.size() >= 255) {
+          error(peek(), "Can't have more than 255 arguments");
+        }
+        arguments.add(expression());
+      } while (match(COMMA));
+    }
+
+    Token paren = consume(RIGHT_PAREN, "Expect ')' after arguments.");
+
+    return new Expr.Call(callee, paren, arguments);
   }
 
   private Expr primary() {
