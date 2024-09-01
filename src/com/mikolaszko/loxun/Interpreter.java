@@ -129,7 +129,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
   @Override
   public Void visitFunctionStmt(Stmt.Function stmt) {
-    LoxunFunction function = new LoxunFunction(stmt);
+    LoxunFunction function = new LoxunFunction(stmt, environment);
     environment.define(stmt.name.lexeme, function);
     return null;
   }
@@ -140,6 +140,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     System.out.println(stringify(value));
     return null;
   }
+
 
   private String stringify(Object object) {
     if (object == null)
