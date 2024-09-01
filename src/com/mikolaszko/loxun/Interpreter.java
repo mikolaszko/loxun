@@ -4,26 +4,28 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
-  private Environment globals = new Environment();
+  public Environment globals = new Environment();
   private Environment environment = globals;
 
   public Interpreter() {
     globals.define("clock", new LoxunCallable() {
-      @Override 
-      public int arity() {return 0;}
-
       @Override
-      public Object call(Interpreter interpreter, List<Object> arguments) {
-        return (double)System.currentTimeMillis() / 1000.0;
+      public int arity() {
+        return 0;
       }
 
       @Override
-      public String toString() {return "<native fn>";}
+      public Object call(Interpreter interpreter, List<Object> arguments) {
+        return (double) System.currentTimeMillis() / 1000.0;
+      }
+
+      @Override
+      public String toString() {
+        return "<native fn>";
+      }
     });
 
   }
-
-
 
   public void interpret(List<Stmt> statements) {
     try {
@@ -35,7 +37,6 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     }
   }
 
-
   private Object evaluate(Expr expr) {
     return expr.accept(this);
   }
@@ -43,7 +44,8 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
   private void execute(Stmt stmt) {
     stmt.accept(this);
   }
-  @Override 
+
+  @Override
   public Object visitCallExpr(Expr.Call expr) {
     Object callee = evaluate(expr.callee);
 
@@ -56,14 +58,16 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
       throw new RuntimeError(expr.paren, "Can only call functions and classes.");
     }
 
-    LoxunCallable function = (LoxunCallable)callee;
+    LoxunCallable function = (LoxunCallable) callee;
     if (arguments.size() != function.arity()) {
-      throw new RuntimeError(expr.paren, "Expected " + function.arity() + " arguments but got " + arguments.size() + ".");
+      throw new RuntimeError(expr.paren,
+          "Expected " + function.arity() + " arguments but got " + arguments.size() + ".");
     }
 
     return function.call(this, arguments);
   }
-  @Override 
+
+  @Override
   public Void visitWhileStmt(Stmt.While stmt) {
     while (isTruthy(evaluate(stmt.condition))) {
       execute(stmt.body);
@@ -71,14 +75,17 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
     return null;
   }
+
   @Override
   public Object visitLogicalExpr(Expr.Logical expr) {
     Object left = evaluate(expr.left);
 
     if (expr.operator.type == TokenType.OR) {
-      if (isTruthy(left)) return left;
+      if (isTruthy(left))
+        return left;
     } else {
-      if (!isTruthy(left)) return left;
+      if (!isTruthy(left))
+        return left;
     }
 
     return evaluate(expr.right);
@@ -117,6 +124,13 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
   @Override
   public Void visitExpressionStmt(Stmt.Expression stmt) {
     evaluate(stmt.expression);
+    return null;
+  }
+
+  @Override
+  public Void visitFunctionStmt(Stmt.Function stmt) {
+    LoxunFunction function = new LoxunFunction(stmt);
+    environment.define(stmt.name.lexeme, function);
     return null;
   }
 
