@@ -24,8 +24,8 @@ abstract public class Expr {
         return visitor.visitAssignExpr(this);
     }
 
-    final Token name;
-    final Expr value;
+   public final Token name;
+   public final Expr value;
  }
  public static class Binary extends Expr {
     public Binary(Expr left, Token operator, Expr right) {
@@ -39,9 +39,9 @@ abstract public class Expr {
         return visitor.visitBinaryExpr(this);
     }
 
-    final Expr left;
-    final Token operator;
-    final Expr right;
+   public final Expr left;
+   public final Token operator;
+   public final Expr right;
  }
  public static class Call extends Expr {
     public Call(Expr callee, Token paren, List<Expr> arguments) {
@@ -55,9 +55,9 @@ abstract public class Expr {
         return visitor.visitCallExpr(this);
     }
 
-    final Expr callee;
-    final Token paren;
-    final List<Expr> arguments;
+   public final Expr callee;
+   public final Token paren;
+   public final List<Expr> arguments;
  }
  public static class Grouping extends Expr {
     public Grouping(Expr expression) {
@@ -69,7 +69,7 @@ abstract public class Expr {
         return visitor.visitGroupingExpr(this);
     }
 
-    final Expr expression;
+   public final Expr expression;
  }
  public static class Literal extends Expr {
     public Literal(Object value) {
@@ -81,7 +81,7 @@ abstract public class Expr {
         return visitor.visitLiteralExpr(this);
     }
 
-    final Object value;
+   public final Object value;
  }
  public static class Logical extends Expr {
     public Logical(Expr left, Token operator, Expr right) {
@@ -95,9 +95,9 @@ abstract public class Expr {
         return visitor.visitLogicalExpr(this);
     }
 
-    final Expr left;
-    final Token operator;
-    final Expr right;
+   public final Expr left;
+   public final Token operator;
+   public final Expr right;
  }
  public static class Unary extends Expr {
     public Unary(Token operator, Expr right) {
@@ -110,8 +110,8 @@ abstract public class Expr {
         return visitor.visitUnaryExpr(this);
     }
 
-    final Token operator;
-    final Expr right;
+   public final Token operator;
+   public final Expr right;
  }
  public static class Variable extends Expr {
     public Variable(Token name) {
@@ -123,7 +123,7 @@ abstract public class Expr {
         return visitor.visitVariableExpr(this);
     }
 
-    final Token name;
+   public final Token name;
  }
 
  abstract <R> R accept(Visitor<R> visitor);
