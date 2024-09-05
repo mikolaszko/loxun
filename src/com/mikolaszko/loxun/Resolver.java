@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Stack;
 
 import loxun.Expr;
+import loxun.Loxun;
 import loxun.Stmt;
 
 public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
@@ -16,8 +17,16 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
   private enum FunctionType {
     NONE,
     FUNCTION,
+    INITIALIZER,
     METHOD
   }
+
+  private enum ClassType {
+    NONE,
+    CLASS
+  }
+
+  private ClassType currentClass = ClassType.NONE;
 
   public Resolver(Interpreter interpreter) {
     this.interpreter = interpreter;
@@ -58,6 +67,9 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
       Loxun.error(stmt.keyword, "Can't return from top-level code.");
     }
     if (stmt.value != null) {
+      if (currentFunction == FunctionType.INITIALIZER) {
+        Loxun.error(stmt.keyword, "Can't return a value from an initializer");
+      }
       resolve(stmt.value);
     }
     return null;
@@ -65,13 +77,36 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
 
   @Override
   public Void visitClassStmt(Stmt.Class stmt) {
+    ClassType enclosingClass = currentClass;
+    currentClass = ClassType.CLASS;
+
     declare(stmt.name);
     define(stmt.name);
 
+    beginScope();
+    scopes.peek().put("this", true);
+
     for (Stmt.Function method : stmt.methods) {
       FunctionType declaration = FunctionType.METHOD;
+      if (method.name.lexeme.equals("init")) {
+        declaration = FunctionType.INITIALIZER;
+      }
       resolveFunction(method, declaration);
     }
+
+    endScope();
+
+    currentClass = enclosingClass;
+    return null;
+  }
+
+  @Override
+  public Void visitThisExpr(Expr.This expr) {
+    if (currentClass == ClassType.NONE) {
+      Loxun.error(expr.keyword, "Can't use 'this' outside of a class.");
+      return null;
+    }
+    resolveLocal(expr, expr.keyword);
     return null;
   }
 

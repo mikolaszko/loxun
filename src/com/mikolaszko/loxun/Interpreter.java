@@ -120,6 +120,11 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
   }
 
   @Override
+  public Object visitThisExpr(Expr.This expr) {
+    return lookUpVariable(expr.keyword, expr);
+  }
+
+  @Override
   public Void visitIfStmt(Stmt.If stmt) {
     if (isTruthy(evaluate(stmt.condition))) {
       execute(stmt.thenBranch);
@@ -157,7 +162,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
   @Override
   public Void visitFunctionStmt(Stmt.Function stmt) {
-    LoxunFunction function = new LoxunFunction(stmt, environment);
+    LoxunFunction function = new LoxunFunction(stmt, environment, false);
     environment.define(stmt.name.lexeme, function);
     return null;
   }
@@ -168,7 +173,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
     Map<String, LoxunFunction> methods = new HashMap<>();
     for (Stmt.Function method : stmt.methods) {
-      LoxunFunction function = new LoxunFunction(method, environment);
+      LoxunFunction function = new LoxunFunction(method, environment, method.name.lexeme.equals("init"));
       methods.put(method.name.lexeme, function);
     }
 

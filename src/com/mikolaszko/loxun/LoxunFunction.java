@@ -5,8 +5,10 @@ import java.util.List;
 public class LoxunFunction implements LoxunCallable {
   private final Stmt.Function declaration;
   private final Environment closure;
+  private final boolean isInitializer;
 
-  public LoxunFunction(Stmt.Function declaration, Environment closure) {
+  public LoxunFunction(Stmt.Function declaration, Environment closure, boolean isInitializer) {
+    this.isInitializer = isInitializer;
     this.closure = closure;
     this.declaration = declaration;
   }
@@ -32,8 +34,19 @@ public class LoxunFunction implements LoxunCallable {
     try {
       interpreter.executeBlock(declaration.body, environment);
     } catch (Return returnValue) {
+      if (isInitializer)
+        return closure.getAt(0, "this");
       return returnValue.value;
     }
+
+    if (isInitializer)
+      return closure.getAt(0, "this");
     return null;
+  }
+
+  public LoxunFunction bind(LoxunInstance instance) {
+    Environment environment = new Environment(closure);
+    environment.define("this", instance);
+    return new LoxunFunction(declaration, environment, isInitializer);
   }
 }
