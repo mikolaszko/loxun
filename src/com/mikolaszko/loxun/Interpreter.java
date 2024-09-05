@@ -75,6 +75,16 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
   }
 
   @Override
+  public Object visitGetExpr(Expr.Get expr) {
+    Object object = evaluate(expr.object);
+    if (object instanceof LoxunInstance) {
+      return ((LoxunInstance) object).get(expr.name);
+    }
+
+    throw new RuntimeError(expr.name, "Only instances have properties.");
+  }
+
+  @Override
   public Void visitWhileStmt(Stmt.While stmt) {
     while (isTruthy(evaluate(stmt.condition))) {
       execute(stmt.body);
@@ -96,6 +106,17 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     }
 
     return evaluate(expr.right);
+  }
+
+  @Override
+  public Object visitSetExpr(Expr.Set expr) {
+    Object object = evaluate(expr.object);
+    if (!(object instanceof LoxunInstance)) {
+      throw new RuntimeError(expr.name, "Only instances have fields.");
+    }
+    Object value = evaluate(expr.value);
+    ((LoxunInstance) object).set(expr.name, value);
+    return value;
   }
 
   @Override
@@ -138,6 +159,15 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
   public Void visitFunctionStmt(Stmt.Function stmt) {
     LoxunFunction function = new LoxunFunction(stmt, environment);
     environment.define(stmt.name.lexeme, function);
+    return null;
+  }
+
+  @Override
+  public Void visitClassStmt(Stmt.Class stmt) {
+    environment.define(stmt.name.lexeme, null);
+    LoxunClass klass = new LoxunClass(stmt.name.lexeme);
+    environment.assign(stmt.name, klass);
+
     return null;
   }
 

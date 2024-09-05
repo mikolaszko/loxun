@@ -1,24 +1,10 @@
-fun makeCounter() {
-  var i = 0;
-  fun count() {
-    i = i + 1;
-    print i;
+class Student {
+  learn() {
+      return "a lot";
   }
-
-  return count;
 }
 
-var counter = makeCounter();
-counter(); // "1".
-counter(); // "2".
+var student = Student();
 
-var a = "global";
-{
-  fun showA() {
-    print a;
-  }
-
-  showA();
-  var a = "block";
-  showA();
-}
+print Student;
+print student;
