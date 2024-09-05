@@ -1,10 +1,9 @@
 class Student {
   learn() {
-      return "a lot";
+      print "a lot";
   }
 }
 
 var student = Student();
 
-print Student;
-print student;
+student.learn();

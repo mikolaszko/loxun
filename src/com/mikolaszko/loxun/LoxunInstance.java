@@ -16,6 +16,10 @@ public class LoxunInstance {
       return fields.get(name.lexeme);
     }
 
+    LoxunFunction method = klass.findMethod(name.lexeme);
+    if (method != null)
+      return method;
+
     throw new RuntimeError(name, "Undefined property '" + name.lexeme + "'.");
   }
 

@@ -1,12 +1,23 @@
 package loxun;
 
 import java.util.List;
+import java.util.Map;
 
 public class LoxunClass implements LoxunCallable {
   final String name;
+  private final Map<String, LoxunFunction> methods;
 
-  public LoxunClass(String name) {
+  public LoxunClass(String name, Map<String, LoxunFunction> methods) {
     this.name = name;
+    this.methods = methods;
+  }
+
+  public LoxunFunction findMethod(String name) {
+    if (methods.containsKey(name)) {
+      return methods.get(name);
+    }
+
+    return null;
   }
 
   @Override
