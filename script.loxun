@@ -1,9 +1,9 @@
-class Student {
-  learn() {
-      print "a lot";
+class Doughnut {
+  cook() {
+    print "Fry until golden brown.";
   }
 }
 
-var student = Student();
+class BostonCream < Doughnut {}
 
-student.learn();
+BostonCream().cook();

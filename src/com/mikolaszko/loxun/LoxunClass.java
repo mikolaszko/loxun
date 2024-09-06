@@ -5,9 +5,11 @@ import java.util.Map;
 
 public class LoxunClass implements LoxunCallable {
   final String name;
+  final LoxunClass superclass;
   private final Map<String, LoxunFunction> methods;
 
-  public LoxunClass(String name, Map<String, LoxunFunction> methods) {
+  public LoxunClass(String name, LoxunClass superclass, Map<String, LoxunFunction> methods) {
+    this.superclass = superclass;
     this.name = name;
     this.methods = methods;
   }
@@ -15,6 +17,11 @@ public class LoxunClass implements LoxunCallable {
   public LoxunFunction findMethod(String name) {
     if (methods.containsKey(name)) {
       return methods.get(name);
+    }
+
+    // poetic
+    if (superclass != null) {
+      return superclass.findMethod(name);
     }
 
     return null;
