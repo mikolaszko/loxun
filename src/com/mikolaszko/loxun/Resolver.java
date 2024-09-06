@@ -95,7 +95,7 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
 
     if (stmt.superclass != null) {
       beginScope();
-      scopes.peek().put("super", this);
+      scopes.peek().put("super", true);
     }
 
     beginScope();

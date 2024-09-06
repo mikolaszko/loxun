@@ -124,7 +124,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     int distance = locals.get(expr);
     LoxunClass superclass = (LoxunClass) environment.getAt(distance, "super");
 
-    LoxunInstance object = (LoxunInstance) environment.get(distance - 1, "this");
+    LoxunInstance object = (LoxunInstance) environment.getAt(distance - 1, "this");
 
     LoxunFunction method = superclass.findMethod(expr.method.lexeme);
 
